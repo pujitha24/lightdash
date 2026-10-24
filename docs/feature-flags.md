@@ -478,3 +478,19 @@ An existing extra cannot change its type with either flag value; add a new
 connection instead. It does not remove
 saved connections or change query execution. Mixed-type extras keep their own
 user-credential requirement; same-type extras still inherit the original's.
+
+### Python warm template
+
+`composer-optimization-python-warm-template` is off by default on Cloud,
+self-hosted and previews. Each Python query resolves it for the project's
+organization through `FeatureFlagModel`, without a user override. The standard
+ENV/database precedence above applies. Console changes affect the next query;
+ENV changes require an API/worker restart.
+
+When enabled with the E2B provider, queries use `E2B_PYTHON_WARM_TEMPLATE_NAME`
+(default `lightdash-python-runner-warm`) and `E2B_PYTHON_WARM_TEMPLATE_TAG`
+(default running version). The template must be published in the configured E2B
+region. Other providers retain their normal image. The actual template is part
+of the Python results cache key and `lightdash.templateRef` trace attribute.
+Disabling restores the cold template for subsequent queries; in-flight queries
+finish with their selected template.
